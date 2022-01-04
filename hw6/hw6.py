@@ -157,7 +157,7 @@ optimizer = torch.optim.SGD(net.parameters(), lr = 0.01, momentum = 0.9)
 # start training
 t_start = time.time()
 
-for epoch in range(7):  # loop over the dataset multiple times
+for epoch in range(5):  # loop over the dataset multiple times
     
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
@@ -226,5 +226,30 @@ for i in range(10):
 
 # overall accuracy
 print('Overall Accurracy: ', (sum(class_correct)/sum(class_total))*100, '%')
+
+
+with torch.no_grad():
+      num_plot = 3
+      images, labels = data[0].to(dev), data[1].to(dev)
+      sample_index = np.random.randint(0, images.shape[0], (num_plot,))
+      outputs = net(images)
+      _, predicted = torch.max(outputs, 1)
+      c = (predicted == labels).squeeze()
+      plt.figure(figsize=(12, 4))
+
+      for i in range(num_plot):
+        idx = sample_index[i]
+        img = np.squeeze(images[idx]).cpu()
+        ax = plt.subplot(1, num_plot, i + 1)
+        plt.imshow(np.transpose(img, (1,2,0)), interpolation='nearest')
+
+        # if our prediction is correct, the title will be in black color
+        # otherwise, for incorrect predictions, the title will be in red
+        if labels[idx] == predicted[idx]:
+            title_color = 'k'
+        else:
+            title_color = 'r'
+
+        ax.set_title('GT:' + classes[labels[idx]] + '\n Pred:' + classes[predicted[idx]], color=title_color)
 
 
